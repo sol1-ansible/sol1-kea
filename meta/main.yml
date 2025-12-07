@@ -1,0 +1,16 @@
+galaxy_info:
+  role_name: sol1.kea
+  author: Josh Matthews
+  company: Sol1 Pty Ltd
+  description: Set up ISC Kea
+  license: MIT
+  min_ansible_version: 2.6.0
+  platforms:
+    - name: Debian
+      versions:
+        - trixie
+  galaxy_tags:
+    - clustering
+    - networking
+    - dhcp
+dependencies: []
