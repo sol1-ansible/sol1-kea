@@ -1,0 +1,69 @@
+# Kea Version - currently only supports v3.0
+kea_version: '3.0'
+
+# Kea backend lease/reservation type
+# Options are postgresql, mysql or memfile
+kea_dhcp4_lease_database_type: memfile
+
+# Kea DB Settings
+kea_db_name: ""
+kea_db_host: ""
+kea_db_username: ""
+kea_db_password: ""
+
+# Kea HA Settings
+kea_dhcp4_ha_enabled: false
+kea_dhcp4_ha_primary: ""
+kea_dhcp4_ha_primary_ip: ""
+kea_dhcp4_ha_standby: ""
+kea_dhcp4_ha_standby_ip: ""
+
+# Kea DHCP4 listener interface list
+kea_dhcp4_interfaces:
+  - "eth0"
+
+# Kea DHCP4 subnet declaration
+kea_dhcp4_subnet:
+  - subnet: "192.168.2.0/24"
+    id: 1
+    pools:
+      - pool: "192.168.2.100 - 192.168.2.200"
+    option-data:
+      - name: "routers"
+        data: "192.168.2.1"
+      - name: "domain-name-servers"
+        data: "192.168.2.1"
+
+# Kea DHCP4 hook libraries (is combined with the HA hook if kea_dhcp4_ha_enabled is true)
+kea_dhcp4_hooks_libraries:
+  - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_host_cmds.so"
+  - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_lease_cmds.so"
+
+# Kea DHCP4 logger info
+kea_dhcp4_loggers:
+  - name: "kea-dhcp4"
+    severity: "INFO"
+    output_option:
+      - output: stdout
+
+# Kea DHCP4 default lease database option
+kea_dhcp4_lease_database:
+  type: "memfile"
+  persist: true
+  name: "/tmp/kea-dhcp4-leases.csv"
+
+# Can add additional packages to be installed with Kea using this var
+kea_packages: []
+
+# Templates required to be looped over
+kea_config_templates:
+  - name: kea-dhcp4.conf.j2
+    dest: "/etc/kea/kea-dhcp4.conf"
+  - name: kea-ctrl-agent.conf.j2
+    dest: "/etc/kea/kea-ctrl-agent.conf"
+
+kea_apparmor_templates:
+  - name: usr.sbin.kea-dhcp4.j2
+    dest: "/etc/apparmor.d/usr.sbin.kea-dhcp4"
+  - name: usr.sbin.kea-ctrl-agent.j2
+    dest: "/etc/apparmor.d/usr.sbin.kea-ctrl-agent"

@@ -1,0 +1,38 @@
+// Managed by Ansible
+{
+    "Dhcp4": {
+        "control-socket": {
+            "socket-type": "unix",
+            "socket-name": "/var/run/kea/kea-dhcp4-ctrl"
+        },
+        "interfaces-config": {
+            "interfaces": {{ kea_dhcp4_interfaces | to_json }}
+        },
+        "hooks-libraries": {{ kea_dhcp4_hooks_libraries | to_json }},
+        "lease-database": {{ kea_dhcp4_lease_database | to_json }},
+        "hosts-database": {{ kea_dhcp4_hosts_database | to_json }},
+        {% if kea_dhcp4_multi_threading is defined %}
+        "multi-threading": {{ kea_dhcp4_multi_threading | to_json }},
+        {% endif %}
+        {% if kea_dhcp4_cache_threshold is defined %}
+        "cache-threshold": "{{ kea_dhcp4_cache_threshold }}",
+        {% endif %}
+        {% if kea_dhcp4_calculate_tee_times is defined %}
+        "calculate-tee-times": "{{ kea_dhcp4_calculate_tee_times }}",
+        {% endif %}
+        {% if kea_dhcp4_valid_lifetime is defined %}
+        "valid-lifetime": "{{ kea_dhcp4_valid_lifetime }}",
+        {% endif %}
+        {% if kea_dhcp4_renew_timer is defined %}
+        "renew-timer": "{{ kea_dhcp4_renew_timer }}",
+        {% endif %}
+        {% if kea_dhcp4_rebind_timer is defined %}
+        "rebind-timer": "{{ kea_dhcp4_rebind_timer }}",
+        {% endif %}
+        {% if kea_dhcp4_global_options is defined %}
+        "option-def": {{ kea_dhcp4_global_options }},
+        {% endif %}
+        "subnet4": {{ kea_dhcp4_subnet | to_json }},
+        "loggers": {{ kea_dhcp4_loggers | to_json }}
+    }
+}

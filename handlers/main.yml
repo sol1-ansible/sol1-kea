@@ -1,0 +1,19 @@
+- name: Reload permissions kea-dhcp4
+  ansible.builtin.command: apparmor_parser -r /etc/apparmor.d/usr.sbin.kea-dhcp4
+  changed_when: false
+
+- name: Reload permissions kea-ctrl-agent
+  ansible.builtin.command: apparmor_parser -r /etc/apparmor.d/usr.sbin.kea-ctrl-agent
+  changed_when: false
+
+- name: Restart kea-dhcp4
+  ansible.builtin.service:
+    name: isc-kea-dhcp4-server
+    state: restarted
+    enabled: true
+
+- name: Restart kea-ctrl-agent
+  ansible.builtin.service:
+    name: isc-kea-dhcp4-server
+    state: restarted
+    enabled: true

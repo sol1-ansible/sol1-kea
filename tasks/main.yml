@@ -1,0 +1,12 @@
+- name: Include tasks to load variables
+  ansible.builtin.include_tasks: load_variables.yml
+
+- name: Include tasks to install required packages
+  ansible.builtin.include_tasks: install.yml
+
+- name: Include tasks to configure kea-dhcp4 and ctrl agent
+  ansible.builtin.include_tasks: configuration.yml
+
+- name: Include tasks to setup DB if required
+  when: kea_dhcp4_lease_database_type != "memfile"
+  ansible.builtin.include_tasks: "{{ kea_dhcp4_lease_database_type }}.yml"

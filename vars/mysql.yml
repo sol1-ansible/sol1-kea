@@ -1,0 +1,31 @@
+_database_packages:
+  - isc-kea-mysql
+  - mariadb-client
+  - mariadb-server
+  - python3-pymysql
+
+_kea_db_name: "{{ kea_db_name | default('kea_db') }}"
+_kea_db_host: "{{ kea_db_host | default('127.0.0.1') }}"
+_kea_db_username: "{{ kea_db_username | default('kea') }}"
+_kea_db_password: "{{ kea_db_password | default('AStrongPassword') }}"
+
+kea_dhcp4_hooks_libraries:
+  - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_mysql.so"
+  - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_host_cmds.so"
+  - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_lease_cmds.so"
+
+kea_dhcp4_lease_database:
+  type: "mysql"
+  name: "{{ _kea_db_name }}"
+  host: "{{ _kea_db_host }}"
+  port: 3306
+  user: "{{ _kea_db_username }}"
+  password: "{{ _kea_db_password }}"
+
+kea_dhcp4_hosts_database:
+  type: "mysql"
+  name: "{{ _kea_db_name }}"
+  user: "{{ _kea_db_username }}"
+  password: "{{ _kea_db_password }}"
+  host: "{{ _kea_db_host }}"
+  port: 3306

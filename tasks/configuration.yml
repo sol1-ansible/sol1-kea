@@ -1,0 +1,49 @@
+- name: Merge in the ha-enabled hook settings
+  when: kea_ha_enabled | bool
+  vars:
+    kea_ha_hook:
+      library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_ha.so"
+      parameters:
+        high-availability:
+          - this-server-name: "{{ inventory_hostname }}"
+            mode: "hot-standby"
+            peers:
+              - name: "{{ kea_dhcp4_ha_primary }}"
+                url: "http://{{ kea_dhcp4_ha_primary_ip }}:8000/"
+                role: "primary"
+              - name: "{{ kea_dhcp4_ha_standby }}"
+                url: "http://{{ kea_dhcp4_ha_standby_ip }}:8000/"
+                role: "standby"
+  ansible.builtin.set_fact:
+    kea_dhcp4_hooks_libraries: "{{ kea_dhcp4_hooks_libraries + [kea_ha_hook] }}"
+
+- name: Create apparmor permission files for kea
+  ansible.builtin.template:
+    src: "{{ item.name }}"
+    dest: "{{ item.dest }}"
+    mode: '0644'
+  notify:
+    - Reload permissions kea-dhcp4
+    - Reload permissions kea-ctrl-agent
+  loop: "{{ kea_apparmor_templates }}"
+
+- name: Create kea config files
+  ansible.builtin.template:
+    src: "{{ template.name }}"
+    dest: "{{ template.dest }}"
+    mode: '0644'
+  notify:
+    - Restart kea-dhcp4
+    - Restart kea-ctrl-agent
+  loop: "{{ kea_config_templates }}"
+  loop_control:
+    loop_var: template
+
+- name: Format config by removing empty lines
+  ansible.builtin.lineinfile:
+    path: "{{ template.dest }}"
+    regex: '^\n'
+    state: absent
+  loop: "{{ kea_config_templates }}"
+  loop_control:
+    loop_var: template

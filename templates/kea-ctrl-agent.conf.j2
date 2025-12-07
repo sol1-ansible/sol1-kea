@@ -1,0 +1,41 @@
+// Managed by Ansible
+{
+
+"Control-agent": {
+    "http-host": "127.0.0.1",
+    "http-port": 8000,
+
+    "control-sockets": {
+        "dhcp4": {
+            "socket-type": "unix",
+            "socket-name": "/var/run/kea/kea-dhcp4-ctrl"
+        },
+        "dhcp6": {
+            "socket-type": "unix",
+            "socket-name": "/var/run/kea/kea6-ctrl-socket"
+        },
+        "d2": {
+            "socket-type": "unix",
+            "socket-name": "/var/run/kea/kea-ddns-ctrl-socket"
+        }
+    },
+
+    "hooks-libraries": [
+    ],
+
+    "loggers": [
+    {
+        // This specifies the logging for Control Agent daemon.
+        "name": "kea-ctrl-agent",
+        "output-options": [
+            {
+                "output": "stdout",
+                "pattern": "%-5p %m\n"
+            }
+        ],
+        "severity": "INFO",
+        "debuglevel": 0
+    }
+  ]
+}
+}

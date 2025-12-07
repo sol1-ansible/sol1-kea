@@ -1,0 +1,36 @@
+- name: Create database
+  community.mysql.mysql_db:
+    name: "{{ _kea_db_name }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create database user
+  community.mysql.mysql_user:
+    name: "{{ _kea_db_username }}"
+    password: "{{ _kea_db_password }}"
+    host: "localhost"
+    priv: "{{ _kea_db_name }}.*:ALL"
+    state: present
+    update_password: always
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Check current kea DB version using kea-admin
+  ansible.builtin.command: >
+    kea-admin db-version pgsql
+    -u "{{ _kea_db_username }}"
+    -p "{{ _kea_db_password }}"
+    -n "{{ _kea_db_name }}"
+  register: kea_db_version_results
+  failed_when: false
+  changed_when: false
+
+- name: Create a DB if previous step states DB is not initialized
+  when: "'not initialized' in kea_db_version.stderr or kea_db_version.rc != 0"
+  ansible.builtin.command: >
+    kea-admin db-init pgsql
+    -u "{{ _kea_db_username }}"
+    -p "{{ _kea_db_password }}"
+    -n "{{ _kea_db_name }}"
+  register: kea_db_version_results
+  failed_when: false
+  changed_when: false
