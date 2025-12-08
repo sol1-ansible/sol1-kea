@@ -1,5 +1,5 @@
 - name: Merge in the ha-enabled hook settings
-  when: kea_ha_enabled | bool
+  when: kea_dhcp4_ha_enabled | bool
   vars:
     kea_ha_hook:
       library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_ha.so"
