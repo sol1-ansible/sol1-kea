@@ -1,5 +1,5 @@
 // Managed by Ansible
-{
+{{ {
     "Dhcp4": {
         "control-socket": {
             "socket-type": "unix",
@@ -35,4 +35,4 @@
         "subnet4": {{ kea_dhcp4_subnet | to_json }},
         "loggers": {{ kea_dhcp4_loggers | to_json }}
     }
-}
+} | to_nice_json }}
