@@ -1,3 +1,9 @@
+- name: Ensure python3-debian is installed
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ prereq_packages }}"
+
 - name: Add cloudsmith apt repo
   when: kea_version == (source.name | split('-') | last)
   ansible.builtin.deb822_repository:

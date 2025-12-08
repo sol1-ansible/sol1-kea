@@ -1,3 +1,6 @@
+prereq_packages:
+  - python3-debian
+
 _kea_apt_sources:
   - name: isc-kea-3.0
     types: [deb]

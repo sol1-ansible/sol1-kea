@@ -54,6 +54,7 @@ kea_dhcp4_lease_database:
 
 # Can add additional packages to be installed with Kea using this var
 kea_packages: []
+prereq_packages: []
 
 # Templates required to be looped over
 kea_config_templates:
