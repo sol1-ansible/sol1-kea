@@ -44,7 +44,8 @@ kea_dhcp4_loggers:
   - name: "kea-dhcp4"
     severity: "INFO"
     output_options:
-      - output: stdout
+      - output: "/var/log/kea/dhcp4-dhcpsrv.log"
+        maxver: 10
 
 # Kea DHCP4 default lease database option
 kea_dhcp4_lease_database:
