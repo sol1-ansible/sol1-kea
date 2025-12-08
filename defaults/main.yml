@@ -43,7 +43,7 @@ kea_dhcp4_hooks_libraries:
 kea_dhcp4_loggers:
   - name: "kea-dhcp4"
     severity: "INFO"
-    output_option:
+    output_options:
       - output: stdout
 
 # Kea DHCP4 default lease database option
