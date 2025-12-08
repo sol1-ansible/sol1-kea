@@ -1,35 +1,48 @@
 // Managed by Ansible
-{{ {
+{% set dhcp4 = {
+  "control-socket": {
+    "socket-type": "unix",
+    "socket-name": "/var/run/kea/kea-dhcp4-ctrl"
+  },
+  "interfaces-config": {
+    "interfaces": kea_dhcp4_interfaces
+  },
+  "hooks-libraries": kea_dhcp4_hooks_libraries,
+  "lease-database": kea_dhcp4_lease_database,
+  "hosts-database": kea_dhcp4_hosts_database,
+  "subnet4": kea_dhcp4_subnet,
+  "loggers": kea_dhcp4_loggers
+} %}
 
-  "Dhcp4": {
-    "control-socket": {
-      "socket-type": "unix",
-      "socket-name": "/var/run/kea/kea-dhcp4-ctrl"
-    },
-    "interfaces-config": {
-      "interfaces": kea_dhcp4_interfaces
-    },
-    "hooks-libraries": kea_dhcp4_hooks_libraries,
-    "lease-database": kea_dhcp4_lease_database,
-    "hosts-database": kea_dhcp4_hosts_database,
+{# Optional fields – add them conditionally via combine() #}
+{% if kea_dhcp4_multi_threading is defined %}
+  {% set dhcp4 = dhcp4 | combine({"multi-threading": kea_dhcp4_multi_threading}) %}
+{% endif %}
 
-    **({"multi-threading": kea_dhcp4_multi_threading} 
-        if kea_dhcp4_multi_threading is defined else {}),
-    **({"cache-threshold": kea_dhcp4_cache_threshold}
-        if kea_dhcp4_cache_threshold is defined else {}),
-    **({"calculate-tee-times": kea_dhcp4_calculate_tee_times}
-        if kea_dhcp4_calculate_tee_times is defined else {}),
-    **({"valid-lifetime": kea_dhcp4_valid_lifetime}
-        if kea_dhcp4_valid_lifetime is defined else {}),
-    **({"renew-timer": kea_dhcp4_renew_timer}
-        if kea_dhcp4_renew_timer is defined else {}),
-    **({"rebind-timer": kea_dhcp4_rebind_timer}
-        if kea_dhcp4_rebind_timer is defined else {}),
-    **({"option-def": kea_dhcp4_global_options}
-        if kea_dhcp4_global_options is defined else {}),
+{% if kea_dhcp4_cache_threshold is defined %}
+  {% set dhcp4 = dhcp4 | combine({"cache-threshold": kea_dhcp4_cache_threshold}) %}
+{% endif %}
 
-    "subnet4": kea_dhcp4_subnet,
-    "loggers": kea_dhcp4_loggers
-  }
+{% if kea_dhcp4_calculate_tee_times is defined %}
+  {% set dhcp4 = dhcp4 | combine({"calculate-tee-times": kea_dhcp4_calculate_tee_times}) %}
+{% endif %}
 
-} | to_nice_json }}
+{% if kea_dhcp4_valid_lifetime is defined %}
+  {% set dhcp4 = dhcp4 | combine({"valid-lifetime": kea_dhcp4_valid_lifetime}) %}
+{% endif %}
+
+{% if kea_dhcp4_renew_timer is defined %}
+  {% set dhcp4 = dhcp4 | combine({"renew-timer": kea_dhcp4_renew_timer}) %}
+{% endif %}
+
+{% if kea_dhcp4_rebind_timer is defined %}
+  {% set dhcp4 = dhcp4 | combine({"rebind-timer": kea_dhcp4_rebind_timer}) %}
+{% endif %}
+
+{% if kea_dhcp4_global_options is defined %}
+  {% set dhcp4 = dhcp4 | combine({"option-def": kea_dhcp4_global_options}) %}
+{% endif %}
+
+{% set root = {"Dhcp4": dhcp4} %}
+
+{{ root | to_nice_json }}
