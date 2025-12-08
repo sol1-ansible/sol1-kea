@@ -43,6 +43,6 @@
   {% set dhcp4 = dhcp4 | combine({"option-def": kea_dhcp4_global_options}) %}
 {% endif %}
 
-{% set root = {"Dhcp4": dhcp4} %}
+{% set _config = {"Dhcp4": dhcp4} %}
 
-{{ root | to_nice_json }}
+{{ _config | to_nice_json }}
