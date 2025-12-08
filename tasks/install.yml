@@ -1,5 +1,5 @@
 - name: Add cloudsmith apt repo
-  when: kea_version == (item.name | split('-') | last)
+  when: kea_version == (source.name | split('-') | last)
   ansible.builtin.deb822_repository:
     name: "{{ source.name }}"
     types: "{{ source.types }}"
