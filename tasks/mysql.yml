@@ -25,12 +25,12 @@
   changed_when: false
 
 - name: Create a DB if previous step states DB is not initialized
-  when: "'not initialized' in kea_db_version.stderr or kea_db_version.rc != 0"
+  when: "'not initialized' in kea_db_version_results.stderr or kea_db_version_results.rc != 0"
   ansible.builtin.command: >
     kea-admin db-init pgsql
     -u "{{ _kea_db_username }}"
     -p "{{ _kea_db_password }}"
     -n "{{ _kea_db_name }}"
-  register: kea_db_version_results
+  register: kea_db_init_results
   failed_when: false
   changed_when: false
