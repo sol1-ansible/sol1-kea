@@ -119,11 +119,25 @@
         mode: "{{ kea_dhcp4_ha_mode}}"
         peers: 
           - name: "{{ kea_dhcp4_ha_1.name }}"
-            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_1.port }}/"
+            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_port }}/"
             role: "primary"
           - name: "{{ kea_dhcp4_ha_2.name }}"
-            url: "http://{{ kea_dhcp4_ha_2.host }}:{{ kea_dhcp4_ha_2.port }}/"
+            url: "http://{{ kea_dhcp4_ha_2.host }}:{{ kea_dhcp4_ha_port }}/"
             role: "secondary"
+
+- name: Build HA peers for passive-backup mode
+  when: 
+   - kea_dhcp4_ha_enabled | bool
+   - kea_dhcp4_ha_config is not defined
+   - kea_dhcp4_ha_mode == "passive-backup"
+  ansible.builtin.set_fact:
+    kea_dhcp4_ha_config:
+      - this-server-name: "{{ inventory_hostname }}"
+        mode: "{{ kea_dhcp4_ha_mode}}"
+        peers: 
+          - name: "{{ kea_dhcp4_ha_1.name }}"
+            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_port }}/"
+            role: "primary"
 
 # Build a normalised backup peers list from kea_dhcp4_ha_backup
 - name: Build HA backup peers list
@@ -135,7 +149,7 @@
       {{
         _kea_dhcp4_ha_backup_peers | default([]) + [{
           'name': item.name,
-          'url': 'http://' ~ item.host ~ ':' ~ item.port ~ '/',
+          'url': 'http://' ~ item.host ~ ':' ~ kea_dhcp4_ha_port ~ '/',
           'role': 'backup'
         }]
       }}
