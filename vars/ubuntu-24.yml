@@ -15,3 +15,6 @@ _kea_packages:
   - isc-kea-ctrl-agent
   - isc-kea-dhcp4-server
   - isc-kea-hooks
+
+_kea_user: _kea
+_kea_group: _kea

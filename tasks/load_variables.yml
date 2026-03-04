@@ -6,6 +6,13 @@
     - "{{ ansible_distribution | lower }}.yml"
     - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version }}.yml"
 
+# Kea users vars (user set -> default OS specific user -> default 'kea')
+- name: Set kea user and group from OS specific variables
+  ansible.builtin.set_fact:
+    kea_user: "{{ kea_user | default(_kea_user) | default('kea') }}"
+    kea_group: "{{ kea_group | default(_kea_group) | default('kea') }}"
+
+# Sanity checks 
 - name: Sanity check for lease and hosts backend types
   assert:
     that:

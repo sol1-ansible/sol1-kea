@@ -1,9 +1,9 @@
 # Kea Version - currently only supports v3.0
 kea_version: '3.0'
 
-# Kea user and group
-kea_user: kea
-kea_group: kea
+# Kea user and group (vars/ contains OS specific defaults, setting them here overrides them)
+# kea_user: _kea
+# kea_group: _kea
 
 # Kea Dirs
 kea_dir_config: "/etc/kea"
