@@ -6,6 +6,71 @@
     - "{{ ansible_distribution | lower }}.yml"
     - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version }}.yml"
 
+- name: Sanity check for lease and hosts backend types
+  assert:
+    that:
+      - kea_dhcp4_lease_database_type in ["postgresql", "mysql", "memfile"]
+      - kea_dhcp4_hosts_database_type in ["postgresql", "mysql", "json"]
+    fail_msg: >-
+      Invalid database type for kea_dhcp4_lease_database_type or kea_dhcp4_hosts_database_type. Valid options are:
+      - kea_dhcp4_lease_database_type: postgresql, mysql or memfile
+      - kea_dhcp4_hosts_database_type: postgresql, mysql or json
+
+- name: Sanity check for mixing DB types
+  assert:
+    that:
+      - not (
+          (kea_dhcp4_lease_database_type == "postgresql" and kea_dhcp4_hosts_database_type == "mysql") or
+          (kea_dhcp4_lease_database_type == "mysql" and kea_dhcp4_hosts_database_type == "postgresql")
+        )
+    fail_msg: >-
+      kea_dhcp4_lease_database_type and kea_dhcp4_hosts_database_type cannot mix 'postgresql' and 'mysql'.
+
+
+# Load the lease database type if not memfile or load the hosts database type if not json and lease is memfile 
 - name: Gather DB specific variables
   when: kea_dhcp4_lease_database_type != "memfile"
   ansible.builtin.include_vars: "{{ kea_dhcp4_lease_database_type }}.yml"
+
+- name: Gather DB specific variables
+  when: kea_dhcp4_lease_database_type == "memfile" and kea_dhcp4_hosts_database_type != "json"
+  ansible.builtin.include_vars: "{{ kea_dhcp4_hosts_database_type }}.yml"
+
+
+# Set the default hooks if the user isn't trying to override them.
+- name: Set lease database config
+  when: _kea_dhcp4_hooks_libraries is defined and kea_dhcp4_hooks_libraries is not defined
+  ansible.builtin.set_fact:
+    kea_dhcp4_hooks_libraries: "{{ _kea_dhcp4_hooks_libraries }}"
+
+
+# Set the sql database config if the user hasn't set it and we are using a sql backend
+- name: Set lease database config
+  when: kea_dhcp4_lease_database_type != "memfile" and kea_dhcp4_lease_database is not defined
+  ansible.builtin.set_fact:
+    kea_dhcp4_lease_database: "{{ _kea_dhcp4_lease_database }}"
+
+- name: Set hosts database config
+  when: kea_dhcp4_hosts_database_type != "json" and kea_dhcp4_hosts_database is not defined
+  ansible.builtin.set_fact:
+    kea_dhcp4_hosts_database: "{{ _kea_dhcp4_hosts_database }}"
+
+
+# If we are using the hosts json backend or lease memfile backend we need to build the config variables for those
+- name: Set lease memfile database config
+  when: kea_dhcp4_lease_database_type == "memfile" and kea_dhcp4_lease_database is not defined
+  ansible.builtin.set_fact:
+    kea_dhcp4_lease_database:
+      type: "memfile"
+      persist: true
+      name: "{{ kea_dhcp4_lease_file }}"
+      flush-interval: "{{ kea_dhcp4_lease_flush_interval | default(30) }}"
+
+- name: Set hosts json database config
+  when: kea_dhcp4_hosts_database_type == "json" and kea_dhcp4_hosts_database is not defined
+  ansible.builtin.set_fact:
+    kea_dhcp4_hosts_database:
+      type: "json"
+      name: "{{ kea_dhcp4_hosts_json_file }}"
+
+

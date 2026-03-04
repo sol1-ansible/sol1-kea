@@ -1,9 +1,26 @@
 # Kea Version - currently only supports v3.0
 kea_version: '3.0'
 
-# Kea backend lease/reservation type
+# Kea user and group
+kea_user: kea
+kea_group: kea
+
+# Kea Dirs
+kea_dir_config: "/etc/kea"
+kea_dir_leases: "{{ kea_dir_config }}/leases"
+kea_dir_log: "/var/log/kea"
+
+# Kea backend lease type
 # Options are postgresql, mysql or memfile
 kea_dhcp4_lease_database_type: memfile
+kea_dhcp4_lease_file: "{{ kea_dir_leases }}/dhcp4.leases"
+kea_dhcp4_lease_flush_interval: 30  # Interval in seconds for flushing memfile leases to disk
+
+# Kea backend reservation type
+# Options are postgresql, mysql or json
+# Hosts.json stores reservations instead of main kea-dhcp4.conf allowing reservations to be added without restarting kea
+kea_dhcp4_hosts_database_type: json
+kea_dhcp4_hosts_json_file: "{{ kea_dir_config }}/hosts.json"
 
 # Kea DB Settings
 kea_db_name: ""
@@ -13,6 +30,7 @@ kea_db_password: ""
 
 # Kea HA Settings
 kea_dhcp4_ha_enabled: false
+kea_dhcp4_ha_mode: "hot-standby"
 kea_dhcp4_ha_primary: ""
 kea_dhcp4_ha_primary_ip: ""
 kea_dhcp4_ha_standby: ""
@@ -39,24 +57,23 @@ kea_dhcp4_hooks_libraries:
   - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_host_cmds.so"
   - library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_lease_cmds.so"
 
+
 # Kea DHCP4 logger info
 kea_dhcp4_loggers:
   - name: "kea-dhcp4"
     severity: "INFO"
     output_options:
-      - output: "/var/log/kea/dhcp4-dhcp.log"
+      - output: "{{ kea_dir_log }}/dhcp4-dhcp.log"
         maxver: 10
   - name: "kea-dhcp4.leases"
     severity: "INFO"
     output_options:
-      - output: "/var/log/kea/dhcp4-leases.log"
+      - output: "{{ kea_dir_log }}/dhcp4-leases.log"
         maxver: 10
 
-# Kea DHCP4 default lease database option
-kea_dhcp4_lease_database:
-  type: "memfile"
-  persist: true
-  name: "/tmp/kea-dhcp4-leases.csv"
+# Control‑Agent bind details
+kea_ctrl_agent_listen_port: 8000
+kea_ctrl_agent_listen_host: "{{ ansible_default_ipv4.address | default('0.0.0.0') }}"
 
 # Can add additional packages to be installed with Kea using this var
 kea_packages: []
@@ -65,9 +82,9 @@ prereq_packages: []
 # Templates required to be looped over
 kea_config_templates:
   - name: kea-dhcp4.conf.j2
-    dest: "/etc/kea/kea-dhcp4.conf"
+    dest: "{{ kea_dir_config }}/kea-dhcp4.conf"
   - name: kea-ctrl-agent.conf.j2
-    dest: "/etc/kea/kea-ctrl-agent.conf"
+    dest: "{{ kea_dir_config }}/kea-ctrl-agent.conf"
 
 kea_apparmor_templates:
   - name: usr.sbin.kea-dhcp4.j2

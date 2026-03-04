@@ -6,7 +6,7 @@
       parameters:
         high-availability:
           - this-server-name: "{{ inventory_hostname }}"
-            mode: "hot-standby"
+            mode: "{{ kea_dhcp4_ha_mode}}"
             peers:
               - name: "{{ kea_dhcp4_ha_primary }}"
                 url: "http://{{ kea_dhcp4_ha_primary_ip }}:8000/"
@@ -26,6 +26,28 @@
     - Reload permissions kea-dhcp4
     - Reload permissions kea-ctrl-agent
   loop: "{{ kea_apparmor_templates }}"
+
+- name: Ensure dirs exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "0750"
+  loop:
+    - "{{ kea_dir_config }}"
+    - "{{ kea_dir_leases }}"
+    - "{{ kea_dir_log }}"
+
+- name: Ensure hosts.json exists
+  copy:
+    dest: "{{ kea_hosts_file }}"
+    content: "[]\n"
+    owner: root
+    group: kea
+    mode: "0640"
+  when: kea_dhcp4_hosts_json_enable
+  notify: reload kea
 
 - name: Create kea config files
   ansible.builtin.template:
