@@ -175,6 +175,6 @@
       - kea_dhcp4_hooks_libraries: "{{ kea_dhcp4_hooks_libraries }}"
       - kea_dhcp4_lease_database: "{{ kea_dhcp4_lease_database }}"
       - kea_dhcp4_hosts_database: "{{ kea_dhcp4_hosts_database }}"
-      - kea_dhcp4_ha_config: "{{ kea_dhcp4_ha_config | default 'Not Set' }}"
+      - kea_dhcp4_ha_config: "{{ kea_dhcp4_ha_config | default('Not Set') }}"
       - kea_install_packages: "{{ kea_install_packages }}"
 
