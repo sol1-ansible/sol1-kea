@@ -73,4 +73,16 @@
       type: "json"
       name: "{{ kea_dhcp4_hosts_json_file }}"
 
+- name: Build install packages list
+  set_fact:
+    kea_install_packages: "{{ _kea_packages + _database_packages + kea_packages | unique }}"
+
+
+- name: Debug generated variables
+  debug:
+    msg: |
+      kea_dhcp4_hooks_libraries: {{ kea_dhcp4_hooks_libraries }}
+      kea_dhcp4_lease_database: {{ kea_dhcp4_lease_database }}
+      kea_dhcp4_hosts_database: {{ kea_dhcp4_hosts_database }}
+      kea_install_packages: {{ kea_install_packages }}
 

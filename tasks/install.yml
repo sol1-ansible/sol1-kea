@@ -19,6 +19,6 @@
 
 - name: Update apt cache and install required packages
   ansible.builtin.apt:
-    name: "{{ _kea_packages + _database_packages + kea_packages }}"
+    name: "{{ kea_install_packages }}"
     state: present
     update_cache: true
