@@ -2,6 +2,7 @@ _database_packages:
   - isc-kea-pgsql
   - postgresql
   - python3-psycopg2
+  - acl # Required for pgsql hooks to set ACLs on socket
 
 _kea_db_name: "{{ kea_db_name | default('kea_db') }}"
 _kea_db_host: "{{ kea_db_host | default('127.0.0.1') }}"
