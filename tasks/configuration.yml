@@ -32,12 +32,12 @@
 
 - name: Ensure hosts.json exists
   copy:
-    dest: "{{ kea_hosts_file }}"
+    dest: "{{ kea_dhcp4_hosts_json_file }}"
     content: "[]\n"
     owner: root
     group: kea
     mode: "0640"
-  when: kea_dhcp4_hosts_json_enable
+  when: kea_dhcp4_hosts_database_type == "json"
   notify: reload kea
 
 - name: Create kea config files
