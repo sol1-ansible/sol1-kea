@@ -102,10 +102,10 @@
         mode: "{{ kea_dhcp4_ha_mode}}"
         peers: 
           - name: "{{ kea_dhcp4_ha_1.name }}"
-            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_1.port }}/"
+            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_port }}/"
             role: "primary"
           - name: "{{ kea_dhcp4_ha_2.name }}"
-            url: "http://{{ kea_dhcp4_ha_2.host }}:{{ kea_dhcp4_ha_2.port }}/"
+            url: "http://{{ kea_dhcp4_ha_2.host }}:{{ kea_dhcp4_ha_port }}/"
             role: "standby"
 
 - name: Build HA peers for load-balancing mode
@@ -176,5 +176,5 @@
       kea_dhcp4_lease_database: {{ kea_dhcp4_lease_database }}
       kea_dhcp4_hosts_database: {{ kea_dhcp4_hosts_database }}
       kea_install_packages: {{ kea_install_packages }}
-      kea_dhcp4_ha_config: {{ kea_dhcp4_ha_config }}
+      kea_dhcp4_ha_config: {{ kea_dhcp4_ha_config | default 'Not Set' }}
 
