@@ -26,6 +26,12 @@
     fail_msg: >-
       kea_dhcp4_lease_database_type and kea_dhcp4_hosts_database_type cannot mix 'postgresql' and 'mysql'.
 
+- name: Sanity check for HA mode
+  assert:
+    that:
+      - kea_dhcp4_ha_mode in ["hot-standby", "load-balancing", "passive-backup"]
+    fail_msg: >-
+      Invalid HA mode for kea_dhcp4_ha_mode. Valid options are hot-standby, load-balancing or passive-backup.
 
 # Load the lease database type if not memfile or load the hosts database type if not json and lease is memfile 
 - name: Gather DB specific variables
@@ -84,6 +90,71 @@
       }}
 
 
+# Build HA peers list based on configured mode when HA is enabled
+- name: Build HA peers for hot-standby mode
+  when: 
+   - kea_dhcp4_ha_enabled | bool
+   - kea_dhcp4_ha_config is not defined
+   - kea_dhcp4_ha_mode == "hot-standby"
+  ansible.builtin.set_fact:
+    kea_dhcp4_ha_config:
+      - this-server-name: "{{ inventory_hostname }}"
+        mode: "{{ kea_dhcp4_ha_mode}}"
+        peers: 
+          - name: "{{ kea_dhcp4_ha_1.name }}"
+            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_1.port }}/"
+            role: "primary"
+          - name: "{{ kea_dhcp4_ha_2.name }}"
+            url: "http://{{ kea_dhcp4_ha_2.host }}:{{ kea_dhcp4_ha_2.port }}/"
+            role: "standby"
+
+- name: Build HA peers for load-balancing mode
+  when: 
+   - kea_dhcp4_ha_enabled | bool
+   - kea_dhcp4_ha_config is not defined
+   - kea_dhcp4_ha_mode == "load-balancing"
+  ansible.builtin.set_fact:
+    kea_dhcp4_ha_config:
+      - this-server-name: "{{ inventory_hostname }}"
+        mode: "{{ kea_dhcp4_ha_mode}}"
+        peers: 
+          - name: "{{ kea_dhcp4_ha_1.name }}"
+            url: "http://{{ kea_dhcp4_ha_1.host }}:{{ kea_dhcp4_ha_1.port }}/"
+            role: "primary"
+          - name: "{{ kea_dhcp4_ha_2.name }}"
+            url: "http://{{ kea_dhcp4_ha_2.host }}:{{ kea_dhcp4_ha_2.port }}/"
+            role: "secondary"
+
+# Build a normalised backup peers list from kea_dhcp4_ha_backup
+- name: Build HA backup peers list
+  when:
+    - kea_dhcp4_ha_enabled | bool
+    - kea_dhcp4_ha_backup is defined
+  ansible.builtin.set_fact:
+    _kea_dhcp4_ha_backup_peers: >-
+      {{
+        _kea_dhcp4_ha_backup_peers | default([]) + [{
+          'name': item.name,
+          'url': 'http://' ~ item.host ~ ':' ~ item.port ~ '/',
+          'role': 'backup'
+        }]
+      }}
+  loop: "{{ kea_dhcp4_ha_backup }}"
+
+# Append backup peers to the ha config peers list
+- name: Append backup peers to HA config
+  when:
+    - kea_dhcp4_ha_enabled | bool
+    - _kea_dhcp4_ha_backup_peers is defined
+  ansible.builtin.set_fact:
+    kea_dhcp4_ha_config: >-
+      {{
+        [kea_dhcp4_ha_config[0] | combine({
+          'peers': kea_dhcp4_ha_config[0].peers + _kea_dhcp4_ha_backup_peers
+        })]
+      }}
+
+
 - name: Debug generated variables
   debug:
     msg: |
@@ -91,4 +162,5 @@
       kea_dhcp4_lease_database: {{ kea_dhcp4_lease_database }}
       kea_dhcp4_hosts_database: {{ kea_dhcp4_hosts_database }}
       kea_install_packages: {{ kea_install_packages }}
+      kea_dhcp4_ha_config: {{ kea_dhcp4_ha_config }}
 

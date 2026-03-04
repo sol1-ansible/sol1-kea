@@ -30,11 +30,21 @@ kea_db_password: ""
 
 # Kea HA Settings
 kea_dhcp4_ha_enabled: false
+# Options are hot-standby, load-balancing or passive-backup
 kea_dhcp4_ha_mode: "hot-standby"
-kea_dhcp4_ha_primary: ""
-kea_dhcp4_ha_primary_ip: ""
-kea_dhcp4_ha_standby: ""
-kea_dhcp4_ha_standby_ip: ""
+# 1 is treated as the primary and 2 is treated as the standby/secondary in hot-standby/load-balancing modes.
+# kea_dhcp4_ha_1: 
+#   name: ""
+#   host: ""
+#   port: 8000
+# kea_dhcp4_ha_2:
+#   name: ""
+#   host: ""
+#   port: 8000
+# kea_dhcp4_ha_backup:
+#   - name: ""
+#     host: ""
+#     port: 8000
 
 # Kea DHCP4 listener interface list
 kea_dhcp4_interfaces:

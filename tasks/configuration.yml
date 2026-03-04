@@ -4,16 +4,7 @@
     kea_ha_hook:
       library: "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_ha.so"
       parameters:
-        high-availability:
-          - this-server-name: "{{ inventory_hostname }}"
-            mode: "{{ kea_dhcp4_ha_mode}}"
-            peers:
-              - name: "{{ kea_dhcp4_ha_primary }}"
-                url: "http://{{ kea_dhcp4_ha_primary_ip }}:8000/"
-                role: "primary"
-              - name: "{{ kea_dhcp4_ha_standby }}"
-                url: "http://{{ kea_dhcp4_ha_standby_ip }}:8000/"
-                role: "standby"
+        high-availability: "{{ kea_dhcp4_ha_config}}"
   ansible.builtin.set_fact:
     kea_dhcp4_hooks_libraries: "{{ kea_dhcp4_hooks_libraries + [kea_ha_hook] }}"
 
