@@ -1,0 +1,13 @@
+- name: Validate kea config files
+  ansible.builtin.command:
+    cmd: "kea-dhcp4 -T {{ template.dest }}"
+  loop: "{{ kea_config_templates | selectattr('name', 'equalto', 'kea-dhcp4.conf.j2') | list }}"
+  loop_control:
+    loop_var: template
+  register: kea_config_validate
+  changed_when: false
+  failed_when: kea_config_validate.rc != 0
+
+# - name: Show config validation output
+#   ansible.builtin.debug:
+#     msg: "{{ kea_config_validate.results | map(attribute='stdout_lines') | list }}"
