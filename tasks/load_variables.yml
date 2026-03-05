@@ -50,11 +50,11 @@
   ansible.builtin.include_vars: "{{ kea_dhcp4_hosts_database_type }}.yml"
 
 
-# Set the default hooks if the user isn't trying to override them.
-- name: Set lease database config
-  when: _kea_dhcp4_hooks_libraries is defined and kea_dhcp4_hooks_libraries is not defined
+# Merge the DB-specific hook libraries into the existing hooks list
+- name: Merge DB hook libraries into kea_dhcp4_hooks_libraries
+  when: _kea_dhcp4_hooks_libraries is defined
   ansible.builtin.set_fact:
-    kea_dhcp4_hooks_libraries: "{{ _kea_dhcp4_hooks_libraries }}"
+    kea_dhcp4_hooks_libraries: "{{ (kea_dhcp4_hooks_libraries + _kea_dhcp4_hooks_libraries) | unique }}"
 
 
 # Set the sql database config if the user hasn't set it and we are using a sql backend
