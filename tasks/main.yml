@@ -7,9 +7,9 @@
 - name: Include tasks to configure kea-dhcp4 and ctrl agent
   ansible.builtin.include_tasks: configuration.yml
 
-- name: Include tasks to validate kea config
-  ansible.builtin.include_tasks: validate.yml
-
 - name: Include tasks to setup DB if required
   when: kea_dhcp4_lease_database_type != "memfile"
   ansible.builtin.include_tasks: "{{ kea_dhcp4_lease_database_type }}.yml"
+
+- name: Include tasks to validate kea config
+  ansible.builtin.include_tasks: validate.yml
