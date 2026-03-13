@@ -7,6 +7,7 @@
   register: kea_config_validate
   changed_when: false
   failed_when: kea_config_validate.rc != 0
+  become: true
 
 # - name: Show config validation output
 #   ansible.builtin.debug:
