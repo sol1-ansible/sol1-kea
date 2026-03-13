@@ -13,7 +13,7 @@
       {{ 
         (
         kea_additional_prereq_packages | default([]) +    
-        (_kea_prereq_packages | default([])
+        _kea_prereq_packages | default([])
         ) | unique
       }}
 
@@ -22,9 +22,9 @@
     kea_install_packages: >-
       {{
         (
-        (kea_additional_packages | default([]) +
-        (_kea_packages | default([]) +
-        (_database_packages | default([])
+        kea_additional_packages | default([]) +
+        _kea_packages | default([]) +
+        _database_packages | default([])
         ) | unique
       }}
 
