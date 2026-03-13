@@ -8,6 +8,7 @@
   changed_when: false
   failed_when: kea_config_validate.rc != 0
   become: true
+  become_user: "{{ kea_user }}"
 
 # - name: Show config validation output
 #   ansible.builtin.debug:
