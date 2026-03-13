@@ -6,6 +6,31 @@
     - "{{ ansible_distribution | lower }}.yml"
     - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version }}.yml"
 
+# Build packages
+- name: Set kea_prereq_packages
+  ansible.builtin.set_fact:
+    kea_prereq_packages: >-
+      {{ 
+        (
+        # user defined
+        kea_additional_prereq_packages | default([]) +    
+        # OS specific var defaults
+        (_kea_prereq_packages | default([])
+        ) | unique
+      }}
+- name: Build install packages list
+  ansible.builtin.set_fact:
+    kea_install_packages: >-
+      {{
+        (
+        # user defined
+        (kea_additional_packages | default([]) +
+        # OS specific var defaults
+        (_kea_packages | default([]) +
+        (_database_packages | default([])
+        ) | unique
+      }}
+
 # Kea users vars (user set -> default OS specific user -> default 'kea')
 - name: Set kea user and group from OS specific variables
   ansible.builtin.set_fact:
@@ -85,16 +110,6 @@
     kea_dhcp4_hosts_database:
       type: "json"
       name: "{{ kea_dhcp4_hosts_json_file }}"
-
-- name: Build install packages list
-  ansible.builtin.set_fact:
-    kea_install_packages: >-
-      {{
-        _kea_packages +
-        (_database_packages | default([])) +
-        (kea_packages | default([]))
-        | unique
-      }}
 
 
 # Build HA peers list based on configured mode when HA is enabled

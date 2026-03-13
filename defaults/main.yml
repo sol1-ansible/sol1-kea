@@ -83,9 +83,9 @@ kea_dhcp4_loggers:
 kea_ctrl_agent_listen_port: 8000
 kea_ctrl_agent_listen_host: "{{ ansible_default_ipv4.address | default('0.0.0.0') }}"
 
-# Can add additional packages to be installed with Kea using this var
-kea_packages: []
-prereq_packages: []
+# Add additional packages if needed
+kea_additional_prereq_packages: []
+kea_additional_packages: []
 
 # Templates required to be looped over
 kea_config_templates:

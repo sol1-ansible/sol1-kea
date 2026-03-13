@@ -2,7 +2,8 @@
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
-  loop: "{{ prereq_packages }}"
+  loop: "{{ kea_prereq_packages }}"
+  become: true
 
 - name: Add cloudsmith apt repo
   when: kea_version == (source.name | split('-') | last)
@@ -16,9 +17,12 @@
   loop: "{{ _kea_apt_sources }}"
   loop_control:
     loop_var: source
+  become: true
 
+# Using apt so we can force cache update, non apt systems will need a separate task
 - name: Update apt cache and install required packages
   ansible.builtin.apt:
     name: "{{ kea_install_packages }}"
     state: present
     update_cache: true
+  become: true

@@ -1,4 +1,4 @@
-prereq_packages:
+_kea_prereq_packages:
   - python3-debian
 
 _kea_apt_sources:

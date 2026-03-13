@@ -107,8 +107,8 @@ kea_dhcp4_subnet:
 |----------|---------|-------------|
 | `kea_dhcp4_hooks_libraries` | See below | Hook libraries to load (auto-set based on DB type) |
 | `kea_dhcp4_loggers` | DHCP4 & leases logs | Logging configuration |
-| `kea_packages` | `[]` | Additional Kea packages to install |
-| `prereq_packages` | `[]` | Additional prerequisite packages |
+| `kea_additional_prereq_packages` | `[]` | Additional prerequisite packages |
+| `kea_additional_packages` | `[]` | Additional Kea packages to install |
 
 Default hooks:
 - `libdhcp_host_cmds.so` - Host commands hook
