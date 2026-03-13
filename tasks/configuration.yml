@@ -29,15 +29,17 @@
     - "{{ kea_dir_config }}"
     - "{{ kea_dir_leases }}"
     - "{{ kea_dir_log }}"
+  become: true
 
 - name: Ensure hosts.json exists
   copy:
     dest: "{{ kea_dhcp4_hosts_json_file }}"
     content: "[]\n"
-    owner: root
-    group: kea
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
     mode: "0640"
   when: kea_dhcp4_hosts_database_type == "json"
+  become: true
   notify: reload kea
 
 - name: Create kea config files
@@ -51,6 +53,7 @@
   loop: "{{ kea_config_templates }}"
   loop_control:
     loop_var: template
+  become: true
 
 - name: Format config by removing empty lines
   ansible.builtin.lineinfile:
@@ -60,3 +63,4 @@
   loop: "{{ kea_config_templates }}"
   loop_control:
     loop_var: template
+  become: true
