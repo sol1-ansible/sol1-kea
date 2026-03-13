@@ -12,20 +12,17 @@
     kea_prereq_packages: >-
       {{ 
         (
-        # user defined
         kea_additional_prereq_packages | default([]) +    
-        # OS specific var defaults
         (_kea_prereq_packages | default([])
         ) | unique
       }}
+
 - name: Build install packages list
   ansible.builtin.set_fact:
     kea_install_packages: >-
       {{
         (
-        # user defined
         (kea_additional_packages | default([]) +
-        # OS specific var defaults
         (_kea_packages | default([]) +
         (_database_packages | default([])
         ) | unique
